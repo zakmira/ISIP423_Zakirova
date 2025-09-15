@@ -9,7 +9,7 @@ class Program
             Console.WriteLine("Ошибка! Можно вводить от 2 до 40 операций");
         }
     
-        string[] oper = new string[count];
+        string[] names = new string[count];
         double[] amounts = new double[count];
 
         Console.WriteLine("Введите операции в формате: Название услуги или товара; Кол-во средств. Необходимы траты в рублях!");
@@ -82,4 +82,17 @@ class Program
             }
         }
     }
+
+    static void ShowData(string[] names, double[] amounts)
+    {
+        Console.WriteLine("\n=== ВАШИ РАСХОДЫ ===");
+        double total = 0;
+        for (int i = 0; i < names.Length; i++)
+        {
+            Console.WriteLine($"{i + 1}. {names[i]} - {amounts[i]:C2}");
+            total += amounts[i];
+        }
+        Console.WriteLine($"Итого: {total:C2}");
+    }
+
 }
