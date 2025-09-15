@@ -10,7 +10,7 @@ class Program
         }
     
         string[] oper = new string[count];
-        double[] amount = new double[count];
+        double[] amounts = new double[count];
 
         Console.WriteLine("Введите операции в формате: Название услуги или товара; Кол-во средств. Необходимы траты в рублях!");
 
@@ -26,13 +26,33 @@ class Program
                 {
                     string name = parts[0].Trim();
                     string value = parts[1].Trim();
-                }
-            }
-            
 
+                    if (!string.IsNullOrEmpty(name) && double.TryParse(value, out double amount) && amount > 0)
+                    {
+                        oper[i] = name;
+                        amounts[i] = amount;
+                        break;
+
+                    }
+                }
+
+                Console.WriteLine("Ошибка формата! Используйте: Название; Сумма (например: Кофе; 150)");
+            }
         }
 
+        bool exit = false;
+        while (!exit)
+        {
+            Console.WriteLine("\n=== ГЛАВНОЕ МЕНЮ ===");
+            Console.WriteLine("1. Вывод данных");
+            Console.WriteLine("2. Статистика");
+            Console.WriteLine("3. Сортировка по цене");
+            Console.WriteLine("4. Конвертация валюты");
+            Console.WriteLine("5. Поиск по названию");
+            Console.WriteLine("0. Выход");
 
+            Console.Write("Выберите пункт меню: ");
+            string choice = Console.ReadLine();
 
-    }
+        }
 }
