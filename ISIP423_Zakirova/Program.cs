@@ -54,5 +54,32 @@ class Program
             Console.Write("Выберите пункт меню: ");
             string choice = Console.ReadLine();
 
+            switch (choice)
+            {
+                case "1":
+                    ShowData(names, amounts);
+                    break;
+                case "2":
+                    ShowStatistics(amounts);
+                    break;
+                case "3":
+                    BubbleSort(names, amounts);
+                    Console.WriteLine("Данные отсортированы по возрастанию цены!");
+                    break;
+                case "4":
+                    ConvertCurrency(amounts);
+                    break;
+                case "5":
+                    SearchByName(names, amounts);
+                    break;
+                case "0":
+                    exit = true;
+                    Console.WriteLine("До свидания!");
+                    break;
+                default:
+                    Console.WriteLine("Неверный выбор! Попробуйте снова.");
+                    break;
+            }
         }
+    }
 }
