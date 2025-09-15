@@ -95,4 +95,28 @@ class Program
         Console.WriteLine($"Итого: {total:C2}");
     }
 
+    static void ShowStatistics(double[] amounts)
+    {
+        if (amounts.Length == 0) return;
+
+        double sum = 0;
+        double min = amounts[0];
+        double max = amounts[0];
+
+        foreach (double amount in amounts)
+        {
+            sum += amount;
+            if (amount < min) min = amount;
+            if (amount > max) max = amount;
+        }
+
+        double average = sum / amounts.Length;
+
+        Console.WriteLine("\n=== СТАТИСТИКА ===");
+        Console.WriteLine($"Сумма: {sum:C2}");
+        Console.WriteLine($"Среднее: {average:C2}");
+        Console.WriteLine($"Минимальная трата: {min:C2}");
+        Console.WriteLine($"Максимальная трата: {max:C2}");
+        Console.WriteLine($"Количество операций: {amounts.Length}");
+    }
 }
