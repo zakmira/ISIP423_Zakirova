@@ -3,12 +3,17 @@ class Program
 {
     static void Main()
     {
-        int count;
-        while (!int.TryParse(Console.ReadLine(), out count) || count < 2 || count > 40) ;
+    
+       int count;
+        while (true)
         {
-            Console.WriteLine("Ошибка! Можно вводить от 2 до 40 операций");
+            Console.Write("Введите количество операций (2-40): ");
+            if (int.TryParse(Console.ReadLine(), out count) && count >= 2 && count <= 40)
+            {
+                break;
+            }
+            Console.WriteLine("Ошибка! Введите число от 2 до 40.");
         }
-
         string[] names = new string[count];
         double[] amounts = new double[count];
 
@@ -92,7 +97,7 @@ class Program
             Console.WriteLine($"{i + 1}. {names[i]} - {amounts[i]:C2}");
             total += amounts[i];
         }
-        Console.WriteLine($"Итого: {total:C2}");
+        Console.WriteLine($"Итого: {total:C2} RUB");
     }
 
     static void ShowStatistics(double[] amounts)
@@ -188,7 +193,7 @@ class Program
 
         for (int i = 0; i < amounts.Length; i++)
         {
-            double convertedAmount = amounts[i] * exchangeRate;
+            double convertedAmount = amounts[i] / exchangeRate;
             Console.WriteLine($"{i + 1}. {convertedAmount:F2} {currencySymbol}");
         }
     }
