@@ -141,4 +141,56 @@ class Program
             }
         }
     }
+
+    static void ConvertCurrency(double[] amounts)
+    {
+        Console.WriteLine("\n=== КОНВЕРТАЦИЯ ВАЛЮТЫ ===");
+        Console.WriteLine("1. Доллар США (USD)");
+        Console.WriteLine("2. Евро (EUR)");
+        Console.WriteLine("3. Тенге (KZT)");
+        Console.WriteLine("4. Другая валюта (ввести курс)");
+        
+        Console.Write("Выберите валюту: ");
+        string currencyChoice = Console.ReadLine();
+        
+        double exchangeRate = 0;
+        string currencySymbol = "";
+        
+        switch (currencyChoice)
+        {
+            case "1":
+                exchangeRate = 90.0; // Пример курса USD
+                currencySymbol = "$";
+                break;
+            case "2":
+                exchangeRate = 98.0; // Пример курса EUR
+                currencySymbol = "€";
+                break;
+            case "3":
+                exchangeRate = 0.2; // Пример курса KZT
+                currencySymbol = "₸";
+                break;
+            case "4":
+                Console.Write("Введите курс конвертации (1 RUB = X): ");
+                while (!double.TryParse(Console.ReadLine(), out exchangeRate) || exchangeRate <= 0)
+                {
+                    Console.Write("Ошибка! Введите положительное число: ");
+                }
+                currencySymbol = "ед.";
+                break;
+            default:
+                Console.WriteLine("Неверный выбор!");
+                return;
+        }
+        
+        Console.WriteLine($"\nКурс: 1 RUB = {exchangeRate} {currencySymbol}");
+        Console.WriteLine("Суммы в выбранной валюте:");
+        
+        for (int i = 0; i < amounts.Length; i++)
+        {
+            double convertedAmount = amounts[i] * exchangeRate;
+            Console.WriteLine($"{i + 1}. {convertedAmount:F2} {currencySymbol}");
+        }
+    }
+
 }
