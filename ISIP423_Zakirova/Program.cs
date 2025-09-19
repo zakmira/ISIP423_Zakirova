@@ -149,13 +149,13 @@ class Program
         Console.WriteLine("2. Евро (EUR)");
         Console.WriteLine("3. Тенге (KZT)");
         Console.WriteLine("4. Другая валюта (ввести курс)");
-        
+
         Console.Write("Выберите валюту: ");
         string currencyChoice = Console.ReadLine();
-        
+
         double exchangeRate = 0;
         string currencySymbol = "";
-        
+
         switch (currencyChoice)
         {
             case "1":
@@ -182,10 +182,10 @@ class Program
                 Console.WriteLine("Неверный выбор!");
                 return;
         }
-        
+
         Console.WriteLine($"\nКурс: 1 RUB = {exchangeRate} {currencySymbol}");
         Console.WriteLine("Суммы в выбранной валюте:");
-        
+
         for (int i = 0; i < amounts.Length; i++)
         {
             double convertedAmount = amounts[i] * exchangeRate;
@@ -193,4 +193,26 @@ class Program
         }
     }
 
+    static void SearchByName(string[] names, double[] amounts)
+    {
+        Console.Write("\nВведите название для поиска: ");
+        string searchTerm = Console.ReadLine().ToLower();
+        
+        bool found = false;
+        
+        Console.WriteLine("\n=== РЕЗУЛЬТАТЫ ПОИСКА ===");
+        for (int i = 0; i < names.Length; i++)
+        {
+            if (names[i].ToLower().Contains(searchTerm))
+            {
+                Console.WriteLine($"{names[i]} - {amounts[i]:C2}");
+                found = true;
+            }
+        }
+        
+        if (!found)
+        {
+            Console.WriteLine("Ничего не найдено.");
+        }
+    }
 }
