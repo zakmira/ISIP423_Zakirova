@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 class Program
 {
     static void Main()
     {
         int count;
-        while (!int.TryParse(Console.ReadLine(), out count) || count < 2 || count > 40);
+        while (!int.TryParse(Console.ReadLine(), out count) || count < 2 || count > 40) ;
         {
             Console.WriteLine("Ошибка! Можно вводить от 2 до 40 операций");
         }
-    
+
         string[] names = new string[count];
         double[] amounts = new double[count];
 
@@ -22,14 +22,14 @@ class Program
                 string input = Console.ReadLine();
                 string[] parts = input.Split(';');
 
-                if (parts.Length == 2 )
+                if (parts.Length == 2)
                 {
                     string name = parts[0].Trim();
                     string value = parts[1].Trim();
 
                     if (!string.IsNullOrEmpty(name) && double.TryParse(value, out double amount) && amount > 0)
                     {
-                        oper[i] = name;
+                        names[i] = name;
                         amounts[i] = amount;
                         break;
 
@@ -118,5 +118,27 @@ class Program
         Console.WriteLine($"Минимальная трата: {min:C2}");
         Console.WriteLine($"Максимальная трата: {max:C2}");
         Console.WriteLine($"Количество операций: {amounts.Length}");
+    }
+
+    static void BubbleSort(string[] names, double[] amounts)
+    {
+        for (int i = 0; i < amounts.Length - 1; i++)
+        {
+            for (int j = 0; j < amounts.Length - i - 1; j++)
+            {
+                if (amounts[j] > amounts[j + 1])
+                {
+                    // Меняем местами суммы
+                    double tempAmount = amounts[j];
+                    amounts[j] = amounts[j + 1];
+                    amounts[j + 1] = tempAmount;
+
+                    // Меняем местами названия
+                    string tempName = names[j];
+                    names[j] = names[j + 1];
+                    names[j + 1] = tempName;
+                }
+            }
+        }
     }
 }
