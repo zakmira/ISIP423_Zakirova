@@ -11,7 +11,26 @@ class TextStatistics
     public int ABcount { get; set; } //гласные и согласные
     public string LongestWord { get; set; }
     public Dictionary<char, int> LetterFreq { get; set; } = new Dictionary<char, int>(); //почитать про char!
+                                                          //Через равно прописываем, чтобы каждый раз не объявлять  
+    public override string ToString() //справка о состоянии программы
+    {
+        return ($"Символов: {Text}, Слов: {WordCount}, Предложений: {SentenceCount}");
+    }
 
-    public 
+}
 
+class Program
+{
+    private static List<TextStatistics> allStatistics = new List<TextStatistics>(); //создаем "архив" под видом переменной, чтобы в нее записывать изменения 
+
+    static void Main(string[] args)
+    {
+        Console.OutputEncoding = Encoding.UTF8;
+        RunProgram();
+    }
+
+    static void RunProgram()
+    {
+
+    }
 }
