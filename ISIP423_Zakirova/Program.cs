@@ -67,6 +67,59 @@ class Program
         Console.WriteLine("1 - Проанализировать новый текст");
         Console.WriteLine("2 - Просмотр истории анализов");
         Console.WriteLine("3 - Выход");
+        Console.Write("Выберите действие: ");
+    }
+    
+    static void AnalyzeNewText()
+    {
+        string text = GetTextFromUser();
 
+        if (text.Length >= 100)
+        {
+            TextStatistics stats = AnalyzeText(text);
+            allStatistics.Add(stats);
+            DisplayStatistics(stats);
+            Console.WriteLine("Возврат меню по клавише");
+            Console.ReadKey();
+        }
+    }
+
+    static string GetTextFromUser()
+    {
+        Console.WriteLine("Введите текст");
+        StringBuilder textBuilder = new StringBuilder();
+        int totalLength = 0;
+
+        while (totalLength < 100)
+        {
+            Console.Write($"[{totalLength}/100+] > ");
+            string inputLine = Console.ReadLine() ?? "";
+            
+            if (string.IsNullOrEmpty(inputLine))
+            {
+                if (totalLength >= 100)
+                {
+                    break;
+                }
+
+                else if (totalLength > 0)
+                {
+                    Console.WriteLine($"Введено только {totalLength} символов. Нужно еще {100 - totalLength}");
+                    Console.WriteLine("Ввод..");
+                    continue;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(inputLine))
+            { 
+                textBuilder.AppendLine(inputLine);
+                totalLength += inputLine.Length;
+            }          
+            
+            if (totalLength >= 100)
+            {
+                break;
+            }
+        }
     }
 }
