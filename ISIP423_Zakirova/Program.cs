@@ -31,6 +31,42 @@ class Program
 
     static void RunProgram()
     {
+        bool ContinueWorking = true;
+
+        while (ContinueWorking)
+        {
+            Console.Clear();
+            ShowMainMenu();
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    AnalyzeNewText();
+                    break;
+                case "2":
+                    ShowHistory();
+                    break;
+                case "3":
+                    ContinueWorking = false;
+                    break;
+                default:
+                    Console.WriteLine("Неверный выбор");
+                    Console.ReadKey(); //чтобы приложение сразу не закрылось
+                    break;
+
+            }
+        }
+
+    }
+
+    static void ShowMainMenu()
+    {
+        Console.WriteLine("Анализ текста");
+        Console.WriteLine("1 - Проанализировать новый текст");
+        Console.WriteLine("2 - Просмотр истории анализов");
+        Console.WriteLine("3 - Выход");
 
     }
 }
