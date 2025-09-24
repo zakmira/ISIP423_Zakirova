@@ -121,5 +121,19 @@ class Program
                 break;
             }
         }
+
+        string finalText = textBuilder.ToString().Trim();
+        Console.WriteLine($"Текст принят. Введено {finalText.Length} символов");
+        return finalText;
     }
+
+    static TextStatistics AnalyzeText(string text) //приступаем к самому анализу
+    {
+        var stats = new TextStatistics { Text = text }; //присваиваем нашему первоначальной переменной Техt значение text (int)
+            
+    }
+
+    
+
+
 }
