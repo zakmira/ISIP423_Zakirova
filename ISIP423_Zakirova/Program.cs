@@ -69,7 +69,7 @@ class Program
         Console.WriteLine("3 - Выход");
         Console.Write("Выберите действие: ");
     }
-    
+
     static void AnalyzeNewText()
     {
         string text = GetTextFromUser();
@@ -94,7 +94,7 @@ class Program
         {
             Console.Write($"[{totalLength}/100+] > ");
             string inputLine = Console.ReadLine() ?? "";
-            
+
             if (string.IsNullOrEmpty(inputLine))
             {
                 if (totalLength >= 100)
@@ -111,11 +111,11 @@ class Program
             }
 
             if (!string.IsNullOrEmpty(inputLine))
-            { 
+            {
                 textBuilder.AppendLine(inputLine);
                 totalLength += inputLine.Length;
-            }          
-            
+            }
+
             if (totalLength >= 100)
             {
                 break;
@@ -147,7 +147,7 @@ class Program
         return stats; //тут короче прописываем чд программе
     }
 
-    static string[] SplitIntoWords(string text) 
+    static string[] SplitIntoWords(string text)
     {
         List<string> words = new List<string>();
         StringBuilder currentWord = new StringBuilder();
@@ -165,7 +165,7 @@ class Program
                 }
 
             }
-        
+
             if (IsSeparator)
             {
                 if (currentWord.Length > 0)
@@ -178,11 +178,40 @@ class Program
             else
             {
                 currentWord.Append(c);
-            }     
+            }
         }
 
+        if (currentWord.Length > 0)
+        {
+            words.Add(currentWord.ToString());
+            string[] wordsArray = new string[words.Count];
+            for (int i = 0; i < words.Count; i++)
+            {
+                wordsArray[i] = words[i];
+            }
 
+            return wordsArray; //добавка последнего слова
+        }
 
+        static void FindShAndLongWord(string[] words, TextStatistics stats)
+        {
+            if (words.Length == 0) return;
 
+            stats.ShortestWord = words[0];
+            stats.LongestWord = words[0];
 
+            for (int i = 1; i < words.Length; i++)
+            {
+                if (words[i].Length < stats.ShortestWord.Length)
+                {
+                    stats.ShortestWord = words[i];
+                }
+
+                if (words.Length > stats.LongestWord.Length)
+                {
+                    stats.LongestWord = words[i];
+                }
+            }
+        }
     }
+}
