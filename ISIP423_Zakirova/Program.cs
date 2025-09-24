@@ -130,10 +130,59 @@ class Program
     static TextStatistics AnalyzeText(string text) //приступаем к самому анализу
     {
         var stats = new TextStatistics { Text = text }; //присваиваем нашему первоначальной переменной Техt значение text (int)
-            
+        string[] words = SplitIntoWords(text);
+        stats.WordCount = words.Length;
+
+        if (words.Length > 0)
+        {
+            FindShAndLongWord(words, stats);
+        }
+
+        stats.SentenceCount = CountSentences(text);
+
+        CountAB(text, stats);
+
+        CountFrequency(text, stats);
+
+        return stats; //тут короче прописываем чд программе
     }
 
-    
+    static string[] SplitIntoWords(string text) 
+    {
+        List<string> words = new List<string>();
+        StringBuilder currentWord = new StringBuilder();
+        char[] separators = { ' ', '\t', '\n', '\r', ',', '.', '!', '?', ';', ':', '-', '(', ')', '[', ']', '\"', '\'' };
+
+        foreach (char c in text)
+        {
+            bool IsSeparator = false;
+            for (int i = 0; i < separators.Length; i++)
+            {
+                if (separators[i] == c)
+                {
+                    IsSeparator = true;
+                    break;
+                }
+
+            }
+        
+            if (IsSeparator)
+            {
+                if (currentWord.Length > 0)
+                {
+                    words.Add(currentWord.ToString());
+                    currentWord.Clear();
+                }
+            }
+
+            else
+            {
+                currentWord.Append(c);
+            }     
+        }
 
 
-}
+
+
+
+    }
