@@ -496,9 +496,7 @@ namespace LibraryManagement
             WaitForEnter();
         }
 
-        /// <summary>
-        /// Показывает все книги
-        /// </summary>
+        // Все книги
         private void ShowAllBooks()
         {
             var books = library.GetAllBooks();
@@ -540,3 +538,28 @@ namespace LibraryManagement
             Console.ReadLine();
         }
     }
+
+    class Program
+    {
+
+        static void Main(string[] args)
+        {
+            try
+            {
+                Console.OutputEncoding = System.Text.Encoding.UTF8;
+                Console.InputEncoding = System.Text.Encoding.UTF8;
+
+                var app = new ConsoleInterface();
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Критическая ошибка: {ex.Message}");
+                Console.ResetColor();
+                Console.WriteLine("Нажмите любую клавишу для выхода...");
+                Console.ReadKey();
+            }
+        }
+    }
+}
