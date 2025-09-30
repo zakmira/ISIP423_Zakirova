@@ -254,3 +254,289 @@ namespace LibraryManagement
                 }
             }
         }
+        // Новая книга
+        private void AddBook()
+        {
+            Console.WriteLine("\nДобавление новой книги");
+            Console.ResetColor();
+
+            Console.Write("Введите название книги: ");
+            string title = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                throw new ArgumentException("Название книги не может быть пустым");
+            }
+
+            Console.Write("Введите автора книги: ");
+            string author = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(author))
+            {
+                throw new ArgumentException("Автор книги не может быть пустым");
+            }
+
+            Console.WriteLine("\nДоступные жанры:");
+            for (int i = 0; i < Book.Genres.Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {Book.Genres[i]}");
+            }
+
+            Console.Write("Выберите жанр (номер): ");
+            if (!int.TryParse(Console.ReadLine(), out int genreIndex) ||
+                genreIndex < 1 || genreIndex > Book.Genres.Length)
+            {
+                throw new ArgumentException("Неверный номер жанра");
+            }
+            string genre = Book.Genres[genreIndex - 1];
+
+            Console.Write("Введите год издания: ");
+            if (!int.TryParse(Console.ReadLine(), out int year))
+            {
+                throw new ArgumentException("Год издания должен быть числом");
+            }
+
+            Console.Write("Введите цену (руб.): ");
+            if (!decimal.TryParse(Console.ReadLine(), out decimal price))
+            {
+                throw new ArgumentException("Цена должна быть числом");
+            }
+
+            var book = library.AddBook(title, author, genre, year, price);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nКнига успешно добавлена!");
+            Console.ResetColor();
+            Console.WriteLine(book.GetFullInfo());
+
+            WaitForEnter();
+        }
+
+        // Делит книги по ID
+        private void RemoveBook()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\nУдаление книги");
+            Console.ResetColor();
+
+            if (library.GetBookCount() == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("В библиотеке нет книг для удаления.");
+                Console.ResetColor();
+                WaitForEnter();
+                return;
+            }
+
+            Console.WriteLine("\nДоступные книги:");
+            foreach (var book in library.GetAllBooks())
+            {
+                Console.WriteLine($"{book.Id}: {book.Title} - {book.Author}");
+            }
+
+            Console.Write("\nВведите ID книги для удаления: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                throw new ArgumentException("ID должен быть числом");
+            }
+
+            var removedBook = library.RemoveBook(id);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nКнига успешно удалена");
+            Console.ResetColor();
+            Console.WriteLine(removedBook.ToString());
+
+            WaitForEnter();
+        }
+
+        // Поиск книг
+        private void FindBooks()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\nПоиск книг");
+            Console.ResetColor();
+            Console.WriteLine("1. По названию");
+            Console.WriteLine("2. По автору");
+            Console.WriteLine("3. По жанру");
+
+            Console.Write("Выберите тип поиска: ");
+            string choice = Console.ReadLine();
+            List<Book> results = new List<Book>();
+
+            switch (choice)
+            {
+                case "1":
+                    Console.Write("Введите название (или часть названия): ");
+                    string title = Console.ReadLine();
+                    results = library.FindByTitle(title);
+                    break;
+                case "2":
+                    Console.Write("Введите автора (или часть имени): ");
+                    string author = Console.ReadLine();
+                    results = library.FindByAuthor(author);
+                    break;
+                case "3":
+                    Console.WriteLine("\nДоступные жанры:");
+                    for (int i = 0; i < Book.Genres.Length; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {Book.Genres[i]}");
+                    }
+                    Console.Write("Выберите жанр (номер): ");
+                    if (!int.TryParse(Console.ReadLine(), out int genreIndex) ||
+                        genreIndex < 1 || genreIndex > Book.Genres.Length)
+                    {
+                        throw new ArgumentException("Неверный номер жанра");
+                    }
+                    results = library.FindByGenre(Book.Genres[genreIndex - 1]);
+                    break;
+                default:
+                    throw new ArgumentException("Неверный выбор");
+            }
+
+            DisplayBooks(results, "Результаты поиска");
+            WaitForEnter();
+        }
+
+        // Сортировка книг
+        private void SortBooks()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\nСортировка книг");
+            Console.WriteLine("1. По названию");
+            Console.WriteLine("2. По году издания");
+
+            Console.Write("Выберите тип сортировки: ");
+            string choice = Console.ReadLine();
+            List<Book> sortedBooks = new List<Book>();
+
+            switch (choice)
+            {
+                case "1":
+                    sortedBooks = library.SortByTitle();
+                    DisplayBooks(sortedBooks, "Книги, отсортированные по названию");
+                    break;
+                case "2":
+                    sortedBooks = library.SortByYear();
+                    DisplayBooks(sortedBooks, "Книги, отсортированные по году издания");
+                    break;
+                default:
+                    throw new ArgumentException("Неверный выбор");
+            }
+
+            WaitForEnter();
+        }
+
+        // Самая дорогая и дешевая книги
+        private void ShowExtremeBooks()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\nСамая дорогая и дешевая книги");
+            Console.ResetColor();
+
+            if (library.GetBookCount() == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("В библиотеке нет книг.");
+                Console.ResetColor();
+                WaitForEnter();
+                return;
+            }
+
+            var mostExpensive = library.GetMostExpensiveBook();
+            var cheapest = library.GetCheapestBook();
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nСамая дорогая книга:");
+            Console.ResetColor();
+            Console.WriteLine(mostExpensive.GetFullInfo());
+
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("\nСамая дешевая книга:");
+            Console.ResetColor();
+            Console.WriteLine(cheapest.GetFullInfo());
+
+            WaitForEnter();
+        }
+
+        // Группировка по авторам
+        private void GroupBooksByAuthor()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\nГруппировка по авторам");
+            Console.ResetColor();
+
+            if (library.GetBookCount() == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("В библиотеке нет книг.");
+                Console.ResetColor();
+                WaitForEnter();
+                return;
+            }
+
+            var groups = library.GroupByAuthor();
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nСтатистика авторов:");
+            Console.ResetColor();
+
+            foreach (var group in groups)
+            {
+                string author = group.Key;
+                var books = group.Value;
+                string bookWord = books.Count == 1 ? "книга" :
+                                 books.Count < 5 ? "книги" : "книг";
+
+                Console.WriteLine($"\n {author} ({books.Count} {bookWord}):");
+                foreach (var book in books)
+                {
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine($"{book.Title} ({book.Year} г., {book.Price:C})");
+                    Console.ResetColor();
+                }
+            }
+
+            WaitForEnter();
+        }
+
+        /// <summary>
+        /// Показывает все книги
+        /// </summary>
+        private void ShowAllBooks()
+        {
+            var books = library.GetAllBooks();
+            DisplayBooks(books, "Все книги в библиотеке");
+            WaitForEnter();
+        }
+
+        // Список книг
+        private void DisplayBooks(List<Book> books, string title)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"\n{title.ToUpper()}");
+            Console.ResetColor();
+
+            if (books.Count == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Книги не найдены.");
+                Console.ResetColor();
+                return;
+            }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Найдено книг: {books.Count}");
+            Console.ResetColor();
+
+            foreach (var book in books)
+            {
+                Console.WriteLine(book.GetFullInfo());
+            }
+        }
+
+        // Ожидает нажатия Enter
+        private void WaitForEnter()
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine("\nНажмите Enter для продолжения...");
+            Console.ResetColor();
+            Console.ReadLine();
+        }
+    }
