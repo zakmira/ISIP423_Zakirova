@@ -165,3 +165,92 @@ namespace LibraryManagement
             return books.Count;
         }
     }
+
+    public class ConsoleInterface
+    {
+        private Library library;
+
+        public ConsoleInterface()
+        {
+            library = new Library();
+        }
+
+        //Главное меню
+        private void ShowMainMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("Система учета книг в библиотеке");
+            Console.WriteLine("Выберите действие: ");
+            Console.WriteLine("1. Добавить книгу");
+            Console.WriteLine("2. Удалить книгу по ID");
+            Console.WriteLine("3. Найти книги");
+            Console.WriteLine("4. Сортировать книги");
+            Console.WriteLine("5. Показать самую дорогую/дешёвую книгу");
+            Console.WriteLine("6. Группировка книг по авторам");
+            Console.WriteLine("7. Показать все книги");
+            Console.WriteLine("0. Выход");
+            Console.WriteLine($"\nВсего книг в библиотеке: {library.GetBookCount()}");
+        }
+
+        public void Run()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Добро пожаловать в систему учёта книг!");
+            Console.ResetColor();
+
+            while (true)
+            {
+                ShowMainMenu();
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("\nВыберите действие (0-7): ");
+                Console.ResetColor();
+
+                string choice = Console.ReadLine();
+
+                try
+                {
+                    switch (choice)
+                    {
+                        case "1":
+                            AddBook();
+                            break;
+                        case "2":
+                            RemoveBook();
+                            break;
+                        case "3":
+                            FindBooks();
+                            break;
+                        case "4":
+                            SortBooks();
+                            break;
+                        case "5":
+                            ShowExtremeBooks();
+                            break;
+                        case "6":
+                            GroupBooksByAuthor();
+                            break;
+                        case "7":
+                            ShowAllBooks();
+                            break;
+                        case "0":
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("До свидания!");
+                            Console.ResetColor();
+                            return;
+                        default:
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                            Console.ResetColor();
+                            WaitForEnter();
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Ошибка: {ex.Message}");
+                    Console.ResetColor();
+                    WaitForEnter();
+                }
+            }
+        }
