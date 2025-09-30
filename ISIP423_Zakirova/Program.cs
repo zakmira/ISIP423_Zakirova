@@ -39,5 +39,129 @@ namespace LibraryManagement
             Year = year;
             Price = price;
         }
+
+        public static bool IsValidGenre(string genre)
+        {
+            return Array.Exists(Genres, g => g.Equals(genre, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public override string ToString()
+        {
+            return $"ID: {Id} | \"{Title}\" - {Author} ({Genre}, {Year} г., {Price:C})";
+        }
+
     }
-}
+
+    public class Library
+    {
+        private List<Book> books;
+
+        public Library()
+        {
+            books = new List<Book>();
+        }
+
+        // Добавление книги в библиотеку
+        public Book AddBook(string title, string author, string genre, int year, decimal price)
+        {
+            if (!Book.IsValidGenre(genre))
+            {
+                throw new ArgumentException($"Недопустимый жанр: {genre}");
+            }
+
+            if (year < 0 || year > DateTime.Now.Year)
+            {
+                throw new ArgumentException($"Недопустимый год издания: {year}");
+            }
+
+            if (price < 0)
+            {
+                throw new ArgumentException($"Цена не может быть отрицательной: {price}");
+            }
+
+            var book = new Book(title, author, genre, year, price);
+            books.Add(book);
+            return book;
+        }
+
+        // Удаление книги по ID
+        public Book RemoveBook(int id)
+        {
+            var book = books.FirstOrDefault(b => b.Id == id);
+            if (book == null)
+            {
+                throw new ArgumentException($"Книга с ID {id} не найдена");
+            }
+
+            books.Remove(book);
+            return book;
+        }
+
+        // Поиск книги по:
+        // названию
+        public List<Book> FindByTitle(string title)
+        {
+            return books.Where(book =>
+                book.Title.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0
+            ).ToList();
+        }
+
+        // автору
+        public List<Book> FindByAuthor(string author)
+        {
+            return books.Where(book =>
+                book.Author.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0
+            ).ToList();
+        }
+
+        // жанру
+        public List<Book> FindByGenre(string genre)
+        {
+            return books.Where(book =>
+                book.Genre.Equals(genre, StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+        }
+
+        // Сортировка по названию
+        public List<Book> SortByTitle()
+        {
+            return books.OrderBy(book => book.Title).ToList();
+        }
+
+        // по году издания
+        public List<Book> SortByYear()
+        {
+            return books.OrderBy(book => book.Year).ToList();
+        }
+
+        // Самая дорогая книга
+        public Book GetMostExpensiveBook()
+        {
+            return books.Count == 0 ? null : books.OrderByDescending(book => book.Price).First();
+        }
+
+        // Самая дешёвая книга
+        public Book GetCheapestBook()
+        {
+            return books.Count == 0 ? null : books.OrderBy(book => book.Price).First();
+        }
+
+        // Группировка по авторам
+        public Dictionary<string, List<Book>> GroupByAuthor()
+        {
+            return books.GroupBy(book => book.Author)
+                       .ToDictionary(group => group.Key, group => group.ToList());
+        }
+
+        // Возвращает все книги
+        public List<Book> GetAllBooks()
+        {
+            return new List<Book>(books);
+        }
+
+        // Возвращает кол-во книг
+        public int GetBookCount()
+        {
+            return books.Count;
+        }
+    }
