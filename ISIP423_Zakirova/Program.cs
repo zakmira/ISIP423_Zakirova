@@ -64,6 +64,14 @@ namespace LibraryManagement
         // Добавление книги в библиотеку
         public Book AddBook(string title, string author, string genre, int year, decimal price)
         {
+            if (string.IsNullOrWhiteSpace(title))
+                throw new ArgumentException("Название книги не может быть пустым");
+
+            if (string.IsNullOrWhiteSpace(author))
+            {
+                throw new ArgumentException("Автор книги не может быть пустым");
+            }
+
             if (!Book.IsValidGenre(genre))
             {
                 throw new ArgumentException($"Недопустимый жанр: {genre}");
@@ -173,6 +181,28 @@ namespace LibraryManagement
         public ConsoleInterface()
         {
             library = new Library();
+            AddTestBooks();
+        }
+
+        private void AddTestBooks()
+        {
+            try
+            {
+                // Добавляем тестовые книги
+                library.AddBook("Мастер и Маргарита", "Михаил Булгаков", "Художественная литература", 1966, 450.50m);
+                library.AddBook("1984", "Джордж Оруэлл", "Научная фантастика", 1949, 380.00m);
+                library.AddBook("Убийство в Восточном экспрессе", "Агата Кристи", "Детектив", 1934, 520.75m);
+                library.AddBook("Властелин Колец", "Дж. Р. Р. Толкин", "Фэнтези", 1954, 890.25m);
+                library.AddBook("Гордость и предубеждение", "Джейн Остин", "Романтика", 1813, 320.00m);
+
+                Console.WriteLine("Добавлено 5 тестовых книг!");
+                Console.ResetColor();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при добавлении тестовых книг: {ex.Message}");
+                Console.ResetColor();
+            }
         }
 
         //Главное меню
@@ -194,14 +224,12 @@ namespace LibraryManagement
 
         public void Run()
         {
-            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Добро пожаловать в систему учёта книг!");
             Console.ResetColor();
 
             while (true)
             {
                 ShowMainMenu();
-                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write("\nВыберите действие (0-7): ");
                 Console.ResetColor();
 
@@ -233,12 +261,11 @@ namespace LibraryManagement
                             ShowAllBooks();
                             break;
                         case "0":
-                            Console.ForegroundColor = ConsoleColor.Green;
                             Console.WriteLine("До свидания!");
                             Console.ResetColor();
                             return;
                         default:
-                            Console.ForegroundColor = ConsoleColor.Red;
+ 
                             Console.WriteLine("Неверный выбор. Попробуйте снова.");
                             Console.ResetColor();
                             WaitForEnter();
@@ -247,7 +274,6 @@ namespace LibraryManagement
                 }
                 catch (Exception ex)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"Ошибка: {ex.Message}");
                     Console.ResetColor();
                     WaitForEnter();
@@ -301,10 +327,15 @@ namespace LibraryManagement
             }
 
             var book = library.AddBook(title, author, genre, year, price);
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"\nОтладочная информация:");
+            Console.WriteLine($"Название: '{book.Title}'");
+            Console.WriteLine($"Автор: '{book.Author}'");
+            Console.WriteLine($"Жанр: '{book.Genre}'");
+            Console.WriteLine($"Год: {book.Year}");
+            Console.WriteLine($"Цена: {book.Price}");
             Console.WriteLine("\nКнига успешно добавлена!");
             Console.ResetColor();
-            Console.WriteLine(book.GetFullInfo());
+            Console.WriteLine(book.ToString());
 
             WaitForEnter();
         }
@@ -312,13 +343,11 @@ namespace LibraryManagement
         // Делит книги по ID
         private void RemoveBook()
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\nУдаление книги");
             Console.ResetColor();
 
             if (library.GetBookCount() == 0)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("В библиотеке нет книг для удаления.");
                 Console.ResetColor();
                 WaitForEnter();
@@ -338,7 +367,6 @@ namespace LibraryManagement
             }
 
             var removedBook = library.RemoveBook(id);
-            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nКнига успешно удалена");
             Console.ResetColor();
             Console.WriteLine(removedBook.ToString());
@@ -349,7 +377,6 @@ namespace LibraryManagement
         // Поиск книг
         private void FindBooks()
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\nПоиск книг");
             Console.ResetColor();
             Console.WriteLine("1. По названию");
@@ -397,7 +424,6 @@ namespace LibraryManagement
         // Сортировка книг
         private void SortBooks()
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\nСортировка книг");
             Console.WriteLine("1. По названию");
             Console.WriteLine("2. По году издания");
@@ -426,13 +452,11 @@ namespace LibraryManagement
         // Самая дорогая и дешевая книги
         private void ShowExtremeBooks()
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\nСамая дорогая и дешевая книги");
             Console.ResetColor();
 
             if (library.GetBookCount() == 0)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("В библиотеке нет книг.");
                 Console.ResetColor();
                 WaitForEnter();
@@ -442,15 +466,13 @@ namespace LibraryManagement
             var mostExpensive = library.GetMostExpensiveBook();
             var cheapest = library.GetCheapestBook();
 
-            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nСамая дорогая книга:");
             Console.ResetColor();
-            Console.WriteLine(mostExpensive.GetFullInfo());
+            Console.WriteLine(mostExpensive.ToString());
 
-            Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("\nСамая дешевая книга:");
             Console.ResetColor();
-            Console.WriteLine(cheapest.GetFullInfo());
+            Console.WriteLine(cheapest.ToString());
 
             WaitForEnter();
         }
@@ -458,13 +480,11 @@ namespace LibraryManagement
         // Группировка по авторам
         private void GroupBooksByAuthor()
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\nГруппировка по авторам");
             Console.ResetColor();
 
             if (library.GetBookCount() == 0)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("В библиотеке нет книг.");
                 Console.ResetColor();
                 WaitForEnter();
@@ -473,7 +493,6 @@ namespace LibraryManagement
 
             var groups = library.GroupByAuthor();
 
-            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nСтатистика авторов:");
             Console.ResetColor();
 
@@ -487,7 +506,6 @@ namespace LibraryManagement
                 Console.WriteLine($"\n {author} ({books.Count} {bookWord}):");
                 foreach (var book in books)
                 {
-                    Console.ForegroundColor = ConsoleColor.Gray;
                     Console.WriteLine($"{book.Title} ({book.Year} г., {book.Price:C})");
                     Console.ResetColor();
                 }
@@ -507,32 +525,31 @@ namespace LibraryManagement
         // Список книг
         private void DisplayBooks(List<Book> books, string title)
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            
             Console.WriteLine($"\n{title.ToUpper()}");
             Console.ResetColor();
 
             if (books.Count == 0)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
+
                 Console.WriteLine("Книги не найдены.");
                 Console.ResetColor();
                 return;
             }
 
-            Console.ForegroundColor = ConsoleColor.Green;
+           
             Console.WriteLine($"Найдено книг: {books.Count}");
             Console.ResetColor();
 
             foreach (var book in books)
             {
-                Console.WriteLine(book.GetFullInfo());
+                Console.WriteLine(book.ToString());
             }
         }
 
         // Ожидает нажатия Enter
         private void WaitForEnter()
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine("\nНажмите Enter для продолжения...");
             Console.ResetColor();
             Console.ReadLine();
@@ -554,7 +571,6 @@ namespace LibraryManagement
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"Критическая ошибка: {ex.Message}");
                 Console.ResetColor();
                 Console.WriteLine("Нажмите любую клавишу для выхода...");
