@@ -76,7 +76,7 @@ namespace StoreInventory
         {
             while (true)
             {
-                Console.WriteLine("=== МЕНЮ УЧЁТА ТОВАРОВ ===");
+                Console.WriteLine("Меню:");
                 Console.WriteLine("1. Добавить товар");
                 Console.WriteLine("2. Удалить товар");
                 Console.WriteLine("3. Заказать поставку товара");
@@ -124,7 +124,7 @@ namespace StoreInventory
         {
             try
             {
-                Console.WriteLine("\n=== ДОБАВЛЕНИЕ ТОВАРА ===");
+                Console.WriteLine("\nДобавление товара");
                 
                 Console.Write("Введите название товара: ");
                 string name = Console.ReadLine().Trim();
@@ -183,7 +183,7 @@ namespace StoreInventory
 
         static void RemoveProductMenu()
         {
-            Console.WriteLine("\n=== УДАЛЕНИЕ ТОВАРА ===");
+            Console.WriteLine("\nУдаление товара");
             Console.Write("Введите код товара для удаления: ");
             string code = Console.ReadLine().Trim();
 
@@ -200,7 +200,7 @@ namespace StoreInventory
 
         static void OrderSupplyMenu()
         {
-            Console.WriteLine("\n=== ЗАКАЗ ПОСТАВКИ ===");
+            Console.WriteLine("\nЗаказ поставки");
             Console.Write("Введите код товара: ");
             string code = Console.ReadLine().Trim();
 
@@ -225,7 +225,7 @@ namespace StoreInventory
 
         static void SellProductMenu()
         {
-            Console.WriteLine("\n=== ПРОДАЖА ТОВАРА ===");
+            Console.WriteLine("\nПродажа товара");
             Console.Write("Введите код товара: ");
             string code = Console.ReadLine().Trim();
 
@@ -264,7 +264,7 @@ namespace StoreInventory
 
         static void SearchProductsMenu()
         {
-            Console.WriteLine("\n=== ПОИСК ТОВАРОВ ===");
+            Console.WriteLine("\nПоиск товаров");
             Console.WriteLine("1. По коду");
             Console.WriteLine("2. По названию");
             Console.WriteLine("3. По категории");
@@ -325,7 +325,7 @@ namespace StoreInventory
 
         static void ShowAllProducts()
         {
-            Console.WriteLine("\n=== ВСЕ ТОВАРЫ ===");
+            Console.WriteLine("\nВсе товары");
             if (products.Count == 0)
             {
                 Console.WriteLine("Товаров нет.");
