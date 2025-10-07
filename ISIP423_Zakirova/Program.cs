@@ -47,6 +47,33 @@ public class Student : Person
     }
 }
 
+public class Teacher : Person
+{
+    private List<Course> _courses = new List<Course>();
+
+    public Teacher(int id, string name, int age, string contactInfo)
+        : base(id, name, age, contactInfo) { }
+
+    public IReadOnlyList<Course> Courses => _courses.AsReadOnly();
+
+    public void AssignToCourse(Course course)
+    {
+        if (!_courses.Contains(course))
+        {
+            _courses.Add(course);
+            course.AssignTeacher(this);
+        }
+    }
+
+    public override void DisplayInfo()
+    {
+        Console.WriteLine($"Преподаватель [ID:{Id}] {Name}, Возраст: {Age}, Контакты: {ContactInfo}");
+        Console.WriteLine("Ведет курсы:");
+        foreach (var course in _courses)
+            Console.WriteLine($"  - {course.Name}");
+    }
+}
+
 public class Course
 {
     public int Id { get; }
@@ -210,4 +237,153 @@ public class UniversityManager
     public bool StudentExists(int id) => _students.Any(s => s.Id == id);
     public bool TeacherExists(int id) => _teachers.Any(t => t.Id == id);
     public bool CourseExists(int id) => _courses.Any(c => c.Id == id);
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var manager = new UniversityManager();
+
+        while (true)
+        {
+            Console.WriteLine("\n=== Система управления университетом ===");
+            Console.WriteLine("1. Добавить студента");
+            Console.WriteLine("2. Показать всех студентов");
+            Console.WriteLine("3. Показать курсы студента");
+            Console.WriteLine("4. Добавить преподавателя");
+            Console.WriteLine("5. Показать всех преподавателей");
+            Console.WriteLine("6. Создать курс");
+            Console.WriteLine("7. Показать все курсы");
+            Console.WriteLine("8. Показать студентов курса");
+            Console.WriteLine("9. Записать студента на курс");
+            Console.WriteLine("10. Назначить преподавателя на курс");
+            Console.WriteLine("0. Выход");
+
+            Console.Write("Выберите действие: ");
+            var choice = Console.ReadLine();
+
+            try
+            {
+                switch (choice)
+                {
+                    case "1":
+                        AddStudent(manager);
+                        break;
+                    case "2":
+                        manager.DisplayAllStudents();
+                        break;
+                    case "3":
+                        DisplayStudentCourses(manager);
+                        break;
+                    case "4":
+                        AddTeacher(manager);
+                        break;
+                    case "5":
+                        manager.DisplayAllTeachers();
+                        break;
+                    case "6":
+                        CreateCourse(manager);
+                        break;
+                    case "7":
+                        manager.DisplayAllCourses();
+                        break;
+                    case "8":
+                        DisplayCourseStudents(manager);
+                        break;
+                    case "9":
+                        EnrollStudent(manager);
+                        break;
+                    case "10":
+                        AssignTeacher(manager);
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        Console.WriteLine("Неверный выбор!");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка: {ex.Message}");
+            }
+        }
+    }
+
+    static void AddStudent(UniversityManager manager)
+    {
+        Console.Write("Введите имя студента: ");
+        var name = Console.ReadLine();
+        Console.Write("Введите возраст: ");
+        var age = int.Parse(Console.ReadLine());
+        Console.Write("Введите контактную информацию: ");
+        var contact = Console.ReadLine();
+
+        manager.AddStudent(name, age, contact);
+    }
+
+    static void AddTeacher(UniversityManager manager)
+    {
+        Console.Write("Введите имя преподавателя: ");
+        var name = Console.ReadLine();
+        Console.Write("Введите возраст: ");
+        var age = int.Parse(Console.ReadLine());
+        Console.Write("Введите контактную информацию: ");
+        var contact = Console.ReadLine();
+
+        manager.AddTeacher(name, age, contact);
+    }
+
+    static void CreateCourse(UniversityManager manager)
+    {
+        Console.Write("Введите название курса: ");
+        var name = Console.ReadLine();
+        Console.Write("Введите описание курса: ");
+        var description = Console.ReadLine();
+
+        manager.CreateCourse(name, description);
+    }
+
+    static void DisplayStudentCourses(UniversityManager manager)
+    {
+        Console.Write("Введите ID студента: ");
+        var id = int.Parse(Console.ReadLine());
+
+        if (manager.StudentExists(id))
+            manager.DisplayStudentCourses(id);
+        else
+            Console.WriteLine("Студент с таким ID не найден!");
+    }
+
+    static void DisplayCourseStudents(UniversityManager manager)
+    {
+        Console.Write("Введите ID курса: ");
+        var id = int.Parse(Console.ReadLine());
+
+        if (manager.CourseExists(id))
+            manager.DisplayCourseStudents(id);
+        else
+            Console.WriteLine("Курс с таким ID не найден!");
+    }
+
+    static void EnrollStudent(UniversityManager manager)
+    {
+        Console.Write("Введите ID студента: ");
+        var studentId = int.Parse(Console.ReadLine());
+        Console.Write("Введите ID курса: ");
+        var courseId = int.Parse(Console.ReadLine());
+
+        manager.EnrollStudentInCourse(studentId, courseId);
+    }
+
+    static void AssignTeacher(UniversityManager manager)
+    {
+        Console.Write("Введите ID преподавателя: ");
+        var teacherId = int.Parse(Console.ReadLine());
+        Console.Write("Введите ID курса: ");
+        var courseId = int.Parse(Console.ReadLine());
+
+        manager.AssignTeacherToCourse(teacherId, courseId);
+    }
 }
