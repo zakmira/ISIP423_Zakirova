@@ -96,3 +96,118 @@ public class Course
     }
 }
 
+public class UniversityManager
+{
+    private List<Student> _students = new List<Student>();
+    private List<Teacher> _teachers = new List<Teacher>();
+    private List<Course> _courses = new List<Course>();
+    private int _nextPersonId = 1;
+    private int _nextCourseId = 1;
+
+    // методы для работы со студентами
+    public void AddStudent(string name, int age, string contactInfo)
+    {
+        var student = new Student(_nextPersonId++, name, age, contactInfo);
+        _students.Add(student);
+        Console.WriteLine($"Добавлен новый студент: {name}");
+    }
+
+    public void DisplayAllStudents()
+    {
+        Console.WriteLine("\nВсе студенты");
+        foreach (var student in _students)
+            student.DisplayInfo();
+    }
+
+    public void DisplayStudentCourses(int studentId)
+    {
+        var student = _students.FirstOrDefault(s => s.Id == studentId);
+        if (student != null)
+        {
+            Console.WriteLine($"\nКурсы студента {student.Name}:");
+            foreach (var course in student.Courses)
+                Console.WriteLine($"  - {course.Name}");
+        }
+        else
+            Console.WriteLine("Студент не найден!");
+    }
+
+    // методы для работы с преподавателями
+    public void AddTeacher(string name, int age, string contactInfo)
+    {
+        var teacher = new Teacher(_nextPersonId++, name, age, contactInfo);
+        _teachers.Add(teacher);
+        Console.WriteLine($"Добавлен новый преподаватель: {name}");
+    }
+
+    public void DisplayAllTeachers()
+    {
+        Console.WriteLine("\nВсе преподаватели");
+        foreach (var teacher in _teachers)
+            teacher.DisplayInfo();
+    }
+
+    // методы для работы с курсами
+    public void CreateCourse(string name, string description)
+    {
+        var course = new Course(_nextCourseId++, name, description);
+        _courses.Add(course);
+        Console.WriteLine($"Создан новый курс: {name}");
+    }
+
+    public void DisplayAllCourses()
+    {
+        Console.WriteLine("\nВсе курсы");
+        foreach (var course in _courses)
+            course.DisplayInfo();
+    }
+
+    public void DisplayCourseStudents(int courseId)
+    {
+        var course = _courses.FirstOrDefault(c => c.Id == courseId);
+        if (course != null)
+        {
+            Console.WriteLine($"\nСтуденты курса {course.Name}:");
+            foreach (var student in course.Students)
+                Console.WriteLine($"  - {student.Name}");
+        }
+        else
+            Console.WriteLine("Курс не найден!");
+    }
+
+    // методы связывания сущностей
+    public void EnrollStudentInCourse(int studentId, int courseId)
+    {
+        var student = _students.FirstOrDefault(s => s.Id == studentId);
+        var course = _courses.FirstOrDefault(c => c.Id == courseId);
+
+        if (student == null || course == null)
+        {
+            Console.WriteLine("Ошибка: Студент или курс не найден!");
+            return;
+        }
+
+        student.EnrollInCourse(course);
+        Console.WriteLine($"Студент {student.Name} записан на курс {course.Name}");
+    }
+
+    public void AssignTeacherToCourse(int teacherId, int courseId)
+    {
+        var teacher = _teachers.FirstOrDefault(t => t.Id == teacherId);
+        var course = _courses.FirstOrDefault(c => c.Id == courseId);
+
+        if (teacher == null || course == null)
+        {
+            Console.WriteLine("Ошибка: Преподаватель или курс не найден!");
+            return;
+        }
+
+        teacher.AssignToCourse(course);
+        Console.WriteLine($"Преподаватель {teacher.Name} назначен на курс {course.Name}");
+    }
+
+    // методы для проверки существования ID
+    public bool StudentExists(int id) => _students.Any(s => s.Id == id);
+    public bool TeacherExists(int id) => _teachers.Any(t => t.Id == id);
+    public bool CourseExists(int id) => _courses.Any(c => c.Id == id);
+}
