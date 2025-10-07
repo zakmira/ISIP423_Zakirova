@@ -47,3 +47,52 @@ public class Student : Person
     }
 }
 
+public class Course
+{
+    public int Id { get; }
+    public string Name { get; }
+    public string Description { get; }
+    private Teacher _teacher;
+    private List<Student> _students = new List<Student>();
+
+    public Course(int id, string name, string description)
+    {
+        Id = id;
+        Name = name;
+        Description = description;
+    }
+
+    public Teacher Teacher => _teacher;
+    public IReadOnlyList<Student> Students => _students.AsReadOnly();
+
+    public void AssignTeacher(Teacher teacher)
+    {
+        if (_teacher != teacher)
+        {
+            _teacher = teacher;
+            if (!teacher.Courses.Contains(this))
+                teacher.AssignToCourse(this);
+        }
+    }
+
+    public void AddStudent(Student student)
+    {
+        if (!_students.Contains(student))
+        {
+            _students.Add(student);
+            if (!student.Courses.Contains(this))
+                student.EnrollInCourse(this);
+        }
+    }
+
+    public void DisplayInfo()
+    {
+        Console.WriteLine($"Курс [ID:{Id}] {Name}");
+        Console.WriteLine($"Описание: {Description}");
+        Console.WriteLine($"Преподаватель: {_teacher?.Name ?? "Не назначен"}");
+        Console.WriteLine("Студенты:");
+        foreach (var student in _students)
+            Console.WriteLine($"  - {student.Name}");
+    }
+}
+
