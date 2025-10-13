@@ -83,4 +83,73 @@ namespace TextRPG
             if (HP < 0) HP = 0;
         }
     }
+
+    // Обычные враги
+    public class Goblin : Enemy
+    {
+        private double critChance = 0.2; // 20% шанс крита
+
+        public Goblin()
+        {
+            Name = "Гоблин";
+            HP = 30;
+            Attack = 15;
+            Defense = 5;
+        }
+
+        public override int CalculateDamage(Player player, Random random)
+        {
+            bool isCrit = random.NextDouble() < critChance;
+            return isCrit ? Attack * 2 : Attack;
+        }
+
+        public override void ApplySpecialEffect(Player player, Random random) { }
+    }
+
+    public class Skeleton : Enemy
+    {
+        public Skeleton()
+        {
+            Name = "Скелет";
+            HP = 25;
+            Attack = 12;
+            Defense = 8;
+        }
+
+        public override int CalculateDamage(Player player, Random random)
+        {
+            return Attack; // Игнорирует защиту
+        }
+
+        public override void ApplySpecialEffect(Player player, Random random) { }
+    }
+
+    public class Mage : Enemy
+    {
+        private double freezeChance = 0.25; // 25% шанс заморозки
+
+        public Mage()
+        {
+            Name = "Маг";
+            HP = 20;
+            Attack = 18;
+            Defense = 3;
+        }
+
+        public override int CalculateDamage(Player player, Random random)
+        {
+            return Attack;
+        }
+
+        public override void ApplySpecialEffect(Player player, Random random)
+        {
+            if (random.NextDouble() < freezeChance)
+            {
+                player.IsFrozen = true;
+            }
+        }
+    }
+
+    
+
 }
