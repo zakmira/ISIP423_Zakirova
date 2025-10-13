@@ -150,6 +150,59 @@ namespace TextRPG
         }
     }
 
-    
+    // Боссы
+    public class VVG : Goblin
+    {
+        public VVG()
+        {
+            Name = "ВВГ (раса Гоблин)";
+            HP = (int)(30 * 2.0);
+            Attack = (int)(15 * 1.5);
+            Defense = (int)(5 * 1.2);
+        }
+    }
+
+    public class Kovalsky : Skeleton
+    {
+        public Kovalsky()
+        {
+            Name = "Ковальский (раса Скелет)";
+            HP = (int)(25 * 2.5);
+            Attack = (int)(12 * 1.3);
+            Defense = (int)(8 * 1.4);
+        }
+    }
+
+    public class ArchmageCPP : Mage
+    {
+        public ArchmageCPP()
+        {
+            Name = "Архимаг C++ (раса Маг)";
+            HP = (int)(20 * 1.8);
+            Attack = (int)(18 * 1.6);
+            Defense = (int)(3 * 1.1);
+        }
+    }
+
+    public class PestovCS : Skeleton
+    {
+        private double freezeChance = 0.4; // 25% + 15%
+
+        public PestovCS()
+        {
+            Name = "Пестов С-- (раса Скелет)";
+            HP = (int)(25 * 1.3);
+            Attack = (int)(12 * 1.8);
+            Defense = (int)(8 * 0.6);
+        }
+
+        public override void ApplySpecialEffect(Player player, Random random)
+        {
+            if (random.NextDouble() < freezeChance)
+            {
+                player.IsFrozen = true;
+            }
+        }
+    }
 
 }
