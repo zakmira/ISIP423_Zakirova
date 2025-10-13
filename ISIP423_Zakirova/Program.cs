@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TextRPG
 {
@@ -238,4 +239,39 @@ namespace TextRPG
         }
     }
 
+    // Сама игра
+    public class Game
+    {
+        private Player player;
+        private Random random;
+        private int turnCount;
+
+        // Списки для случайного врага
+        private readonly EnemyType[] enemyTypes = { EnemyType.Goblin, EnemyType.Skeleton, EnemyType.Mage };
+        private readonly BossType[] bossTypes = { BossType.VVG, BossType.Kovalsky, BossType.ArchmageCPP, BossType.PestovCS };
+
+        // Возможные предметы для сундуков
+        private readonly Weapon[] possibleWeapons = {
+            new Weapon("Острый меч", 15),
+            new Weapon("Топор воина", 20),
+            new Weapon("Посох мага", 25),
+            new Weapon("Легендарный клинок", 35)
+        };
+
+        private readonly Armor[] possibleArmors = {
+            new Armor("Кожаные доспехи", 8),
+            new Armor("Кольчуга", 12),
+            new Armor("Латные доспехи", 18),
+            new Armor("Магические доспехи", 25)
+        };
+
+        public Game()
+        {
+            player = new Player();
+            random = new Random();
+            turnCount = 0;
+        }
+
+       
+    }
 }
