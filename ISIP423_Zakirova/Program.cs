@@ -447,5 +447,31 @@ namespace TextRPG
             }
         }
 
+        private void OfferItemSwap<T>(T newItem) where T : class
+        {
+            Console.WriteLine("Хотите взять новый предмет?");
+            Console.WriteLine("1 - Взять новый предмет");
+            Console.WriteLine("2 - Оставить старый");
+
+            int choice = GetPlayerChoice(1, 2);
+
+            if (choice == 1)
+            {
+                if (newItem is Weapon newWeapon)
+                {
+                    player.EquippedWeapon = newWeapon;
+                    Console.WriteLine($"Вы экипировали: {newWeapon.Name}");
+                }
+                else if (newItem is Armor newArmor)
+                {
+                    player.EquippedArmor = newArmor;
+                    Console.WriteLine($"Вы экипировали: {newArmor.Name}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Вы оставили старый предмет");
+            }
+        }
     }
 }
