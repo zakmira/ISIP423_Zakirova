@@ -397,5 +397,23 @@ namespace TextRPG
             Console.WriteLine($"{enemy.Name}: HP {Math.Max(0, enemy.HP)}/{enemy.HP + damage}");
         }
 
+        private void EnemyTurn(Enemy enemy)
+        {
+            Console.WriteLine($"\nХод {enemy.Name}:");
+
+            // Враг всегда атакует
+            int damage = enemy.CalculateDamage(player, random);
+
+            // Применяем особые эффекты врага
+            enemy.ApplySpecialEffect(player, random);
+
+            player.TakeDamage(damage);
+            Console.WriteLine($"{enemy.Name} наносит вам {damage} урона!");
+
+            if (player.IsFrozen)
+            {
+                Console.WriteLine("Враг заморозил вас! Вы пропустите следующий ход.");
+            }
+        }
     }
 }
