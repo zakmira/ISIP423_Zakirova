@@ -354,5 +354,48 @@ namespace TextRPG
 
             Console.WriteLine($"Вы победили Босса {boss.Name}!");
         }
+
+        private void PlayerTurn(Enemy enemy)
+        {
+            if (player.IsFrozen)
+            {
+                Console.WriteLine("Вы заморожены и пропускаете ход!");
+                player.IsFrozen = false;
+                return;
+            }
+
+            Console.WriteLine("\nВаш ход:");
+            Console.WriteLine("1 - Атаковать");
+            Console.WriteLine("2 - Защищаться");
+
+            int choice = GetPlayerChoice(1, 2);
+
+            if (choice == 1)
+            {
+                int damage = player.EquippedWeapon.Damage;
+                enemy.TakeDamage(damage);
+                Console.WriteLine($"Вы нанесли {damage} урона {enemy.Name}!");
+            }
+            else
+            {
+                // Защита - шанс увернуться 40%
+                if (random.NextDouble() < 0.4)
+                {
+                    Console.WriteLine("Вы успешно уклонились от атаки!");
+                    return;
+                }
+                else
+                {
+                    // Блокирование урона (70-100% от защиты)
+                    double blockPercent = 0.7 + random.NextDouble() * 0.3;
+                    int blockedDamage = (int)(player.EquippedArmor.Defense * blockPercent);
+                    Console.WriteLine($"Вы блокируете {blockedDamage} урона в следующей атаке!");
+                    // Здесь блокирование будет учтено при расчете урона врага
+                }
+            }
+
+            Console.WriteLine($"{enemy.Name}: HP {Math.Max(0, enemy.HP)}/{enemy.HP + damage}");
+        }
+
     }
 }
