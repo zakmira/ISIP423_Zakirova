@@ -318,5 +318,41 @@ namespace TextRPG
                 }
             }
         }
+
+        private void FightEnemy()
+        {
+            Enemy enemy = CreateRandomEnemy();
+            Console.WriteLine($"\nПоявляется враг: {enemy.Name} (HP: {enemy.HP}, атака: {enemy.Attack}, защита: {enemy.Defense})");
+
+            while (enemy.IsAlive() && player.IsAlive())
+            {
+                PlayerTurn(enemy);
+                if (!enemy.IsAlive()) break;
+
+                EnemyTurn(enemy);
+            }
+
+            if (!player.IsAlive()) return;
+
+            Console.WriteLine($"Вы победили {enemy.Name}!");
+        }
+
+        private void FightBoss()
+        {
+            Enemy boss = CreateRandomBoss();
+            Console.WriteLine($"\nПоявляется Босс: {boss.Name} (HP: {boss.HP}, атака: {boss.Attack}, защита: {boss.Defense})");
+
+            while (boss.IsAlive() && player.IsAlive())
+            {
+                PlayerTurn(boss);
+                if (!boss.IsAlive()) break;
+
+                EnemyTurn(boss);
+            }
+
+            if (!player.IsAlive()) return;
+
+            Console.WriteLine($"Вы победили Босса {boss.Name}!");
+        }
     }
 }
