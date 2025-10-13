@@ -415,5 +415,37 @@ namespace TextRPG
                 Console.WriteLine("Враг заморозил вас! Вы пропустите следующий ход.");
             }
         }
+
+        private void OpenChest()
+        {
+            Console.WriteLine("\nВам повезло - вы нашли сундук!");
+
+            // Случайный предмет
+            int itemType = random.Next(3);
+
+            switch (itemType)
+            {
+                case 0:
+                    HealthPotion potion = new HealthPotion();
+                    potion.Use(player);
+                    Console.WriteLine("Вы нашли лечебное зелье! Здоровье полностью восстановлено.");
+                    break;
+
+                case 1:
+                    Weapon newWeapon = possibleWeapons[random.Next(possibleWeapons.Length)];
+                    Console.WriteLine($"Вы нашли новое оружие: {newWeapon.Name} (урон: {newWeapon.Damage})");
+                    Console.WriteLine($"Ваше текущее оружие: {player.EquippedWeapon.Name} (урон: {player.EquippedWeapon.Damage})");
+                    OfferItemSwap(newWeapon);
+                    break;
+
+                case 2:
+                    Armor newArmor = possibleArmors[random.Next(possibleArmors.Length)];
+                    Console.WriteLine($"Вы нашли новые доспехи: {newArmor.Name} (защита: {newArmor.Defense})");
+                    Console.WriteLine($"Ваши текущие доспехи: {player.EquippedArmor.Name} (защита: {player.EquippedArmor.Defense})");
+                    OfferItemSwap(newArmor);
+                    break;
+            }
+        }
+
     }
 }
