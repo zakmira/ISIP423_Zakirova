@@ -272,6 +272,51 @@ namespace TextRPG
             turnCount = 0;
         }
 
-       
+        public void Start()
+        {
+            Console.WriteLine("Добро пожаловать в игру!");
+            Console.WriteLine("Введите цифры для выбора действий");
+
+            while (player.IsAlive())
+            {
+                turnCount++;
+                Console.WriteLine($"\nХод {turnCount}");
+                Console.WriteLine($"Здоровье: {player.CurrentHP}/{player.MaxHP}");
+                Console.WriteLine($"Оружие: {player.EquippedWeapon.Name} (урон: {player.EquippedWeapon.Damage})");
+                Console.WriteLine($"Доспехи: {player.EquippedArmor.Name} (защита: {player.EquippedArmor.Defense})");
+
+                // Каждые 10 ходов - босс
+                if (turnCount % 10 == 0)
+                {
+                    Console.WriteLine("\nВнимание!!! Босс");
+                    FightBoss();
+                }
+                else
+                {
+                    // 50/50 шанс на сундук или врага
+                    if (random.Next(2) == 0)
+                    {
+                        FightEnemy();
+                    }
+                    else
+                    {
+                        OpenChest();
+                    }
+                }
+
+                // Проверка на победу (условно - после 30 ходов)
+                if (turnCount >= 30)
+                {
+                    Console.WriteLine("\nВы прошли игру!");
+                    break;
+                }
+
+                if (!player.IsAlive())
+                {
+                    Console.WriteLine("\nИгра окончена! Вы погибли :(");
+                    break;
+                }
+            }
+        }
     }
 }
