@@ -245,6 +245,7 @@ namespace TextRPG
         private Player player;
         private Random random;
         private int turnCount;
+        private int damage;
 
         // Списки для случайного врага
         private readonly EnemyType[] enemyTypes = { EnemyType.Goblin, EnemyType.Skeleton, EnemyType.Mage };
@@ -304,8 +305,8 @@ namespace TextRPG
                     }
                 }
 
-                // Проверка на победу (условно - после 30 ходов)
-                if (turnCount >= 30)
+                // Проверка на победу (условно - после 20 ходов)
+                if (turnCount >= 20)
                 {
                     Console.WriteLine("\nВы прошли игру!");
                     break;
@@ -394,7 +395,7 @@ namespace TextRPG
                 }
             }
 
-            Console.WriteLine($"{enemy.Name}: HP {Math.Max(0, enemy.HP)}/{enemy.HP + damage}");
+            
         }
 
         private void EnemyTurn(Enemy enemy)
@@ -473,5 +474,46 @@ namespace TextRPG
                 Console.WriteLine("Вы оставили старый предмет");
             }
         }
+
+        private Enemy CreateRandomEnemy()
+        {
+            EnemyType type = enemyTypes[random.Next(enemyTypes.Length)];
+
+            return type switch
+            {
+                EnemyType.Goblin => new Goblin(),
+                EnemyType.Skeleton => new Skeleton(),
+                EnemyType.Mage => new Mage(),
+                _ => new Goblin()
+            };
+        }
+
+        private Enemy CreateRandomBoss()
+        {
+            BossType type = bossTypes[random.Next(bossTypes.Length)];
+
+            return type switch
+            {
+                BossType.VVG => new VVG(),
+                BossType.Kovalsky => new Kovalsky(),
+                BossType.ArchmageCPP => new ArchmageCPP(),
+                BossType.PestovCS => new PestovCS(),
+                _ => new VVG()
+            };
+        }
+
+        private int GetPlayerChoice(int min, int max)
+        {
+            while (true)
+            {
+                Console.Write("Ваш выбор: ");
+                if (int.TryParse(Console.ReadLine(), out int choice) && choice >= min && choice <= max)
+                {
+                    return choice;
+                }
+                Console.WriteLine($"Пожалуйста, введите число от {min} до {max}");
+            }
+        }
     }
+
 }
