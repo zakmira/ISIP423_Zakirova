@@ -213,7 +213,7 @@ namespace ConsoleApp1
                     Core.Context.Parts,
                     repairPart => repairPart.PartID,
                     part => part.PartID,
-                    (stockItem, part) => new { PartName = part.PartName, Quantity = stockItem.Quantity, Price = part.Price, PartID = part.PartID } 
+                    (repairPart, part) => new { PartName = part.PartName, Quantity = repairPart.Quantity, Price = part.Price, PartID = part.PartID } 
                 )
                 .ToList();
 
