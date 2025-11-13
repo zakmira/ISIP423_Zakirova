@@ -59,7 +59,7 @@
               <PropertyRef Name="PlayerID" />
             </Principal>
             <Dependent Role="PartsInStock">
-              <PropertyRef Name="PartID" />
+              <PropertyRef Name="PlayerID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -100,6 +100,7 @@
           <Property Name="Quantity" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Parts" Relationship="Self.FK_PartsInStock_Parts" FromRole="PartsInStock" ToRole="Parts" />
           <NavigationProperty Name="Player" Relationship="Self.FK_PartsInStock_Player" FromRole="PartsInStock" ToRole="Player" />
+          <NavigationProperty Name="Player1" Relationship="pr7Model.FK_PartsInStock_Player1" FromRole="PartsInStock" ToRole="Player" />
         </EntityType>
         <EntityType Name="Player">
           <Key>
@@ -108,6 +109,7 @@
           <Property Name="PlayerID" Type="Int32" Nullable="false" />
           <Property Name="MyBalance" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
           <NavigationProperty Name="PartsInStock" Relationship="Self.FK_PartsInStock_Player" FromRole="Player" ToRole="PartsInStock" />
+          <NavigationProperty Name="PartsInStock1" Relationship="pr7Model.FK_PartsInStock_Player1" FromRole="Player" ToRole="PartsInStock" />
         </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
@@ -156,7 +158,23 @@
             <End Role="Player" EntitySet="Player" />
             <End Role="PartsInStock" EntitySet="PartsInStock" />
           </AssociationSet>
+          <AssociationSet Name="FK_PartsInStock_Player1" Association="pr7Model.FK_PartsInStock_Player1">
+            <End Role="Player" EntitySet="Player" />
+            <End Role="PartsInStock" EntitySet="PartsInStock" />
+          </AssociationSet>
         </EntityContainer>
+        <Association Name="FK_PartsInStock_Player1">
+          <End Type="pr7Model.Player" Role="Player" Multiplicity="1" />
+          <End Type="pr7Model.PartsInStock" Role="PartsInStock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Player">
+              <PropertyRef Name="PlayerID" />
+            </Principal>
+            <Dependent Role="PartsInStock">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->

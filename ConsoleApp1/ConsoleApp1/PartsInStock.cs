@@ -20,5 +20,6 @@ namespace ConsoleApp1
     
         public virtual Parts Parts { get; set; }
         public virtual Player Player { get; set; }
+        public virtual Player Player1 { get; set; }
     }
 }

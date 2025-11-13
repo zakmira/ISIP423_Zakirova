@@ -18,6 +18,7 @@ namespace ConsoleApp1
         public Player()
         {
             this.PartsInStock = new HashSet<PartsInStock>();
+            this.PartsInStock1 = new HashSet<PartsInStock>();
         }
     
         public int PlayerID { get; set; }
@@ -25,5 +26,7 @@ namespace ConsoleApp1
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PartsInStock> PartsInStock { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PartsInStock> PartsInStock1 { get; set; }
     }
 }

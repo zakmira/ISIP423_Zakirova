@@ -17,28 +17,23 @@ namespace ConsoleApp1
             public string ClientName { get; set; }
             public decimal RepairCost { get; set; }
 
-            public Client(string name, Parts part, decimal repairCost)
+            public Client(string name, Parts part, decimal workCost = 500)
             {
                 BrokenPart = part;
                 ClientName = name;
-                Work(RepairCost);
+                Work(workCost);
 
             }
 
             public void Work(decimal workCost)
             {
-                if (workCost <= 0)
-                {
-                    Console.WriteLine("Ошибка! Стоимость работы не может быть отриц. или 0");
-                    return;
-                }
-
                 if (BrokenPart.Price < 0)
                 {
                     Console.WriteLine("Ошибка: Цена детали не может быть отриц.");
                     return;
                 }
 
+                
                 RepairCost = workCost + BrokenPart.Price;
 
             }
@@ -46,6 +41,7 @@ namespace ConsoleApp1
 
         public class Game
         {
+            public decimal workCost = 500; 
             public int penalty = 700;
             public Player player;
             private List<Parts> allParts;
@@ -69,13 +65,20 @@ namespace ConsoleApp1
                 if (player == null)
                 {
                     Console.WriteLine("Игрок с таким ID не найден");
-                    return;
+                    Player newPlayer = new Player { MyBalance = 10000 };
+                    Core.Context.Player.Add(newPlayer);
+                    Core.Context.SaveChanges();
+                    player = Core.Context.Player.FirstOrDefault(p => p.PlayerID == newPlayer.PlayerID);
+
+                    if (player == null)
+                    {
+                        throw new InvalidOperationException("Не удалось загрузить созданного игрока");
+                    }
+
+                    Console.WriteLine("Новый игрок создан!");
                 }
 
-                partsInStock = Core.Context.PartsInStock.Where(p => p.PlayerID == playerID).ToList();
-
-                Core.Context.PartsInStock.ToList();
-                Core.Context.Player.ToList();
+                partsInStock = Core.Context.PartsInStock.Where(p => p.PlayerID == player.PlayerID).ToList();
             }
 
             public Client GenerateClient()
@@ -92,7 +95,6 @@ namespace ConsoleApp1
                 names.Add("Владимир Горланов");
 
                 string clientName = names[random.Next(names.Count)];
-                decimal workCost = 500;
 
                 return new Client(clientName, randomPart, workCost);
             }
@@ -118,8 +120,9 @@ namespace ConsoleApp1
                     player.MyBalance += client.RepairCost;
 
                     Core.Context.SaveChanges();
+                    partsInStock = Core.Context.PartsInStock.Where(p => p.PlayerID == player.PlayerID).ToList();
 
-                    Console.WriteLine($"Ремонт выполнен! Использовано: {client.BrokenPart}");
+                    Console.WriteLine($"Ремонт выполнен! Использовано: {client.BrokenPart.PartName}");
                 }
                 else
                 {
@@ -136,6 +139,20 @@ namespace ConsoleApp1
 
             public void OrderParts(Parts part, int quantity)
             {
+                if (player == null)
+                {
+                    Console.WriteLine("Ошибка: Данные игрока не загружены. Невозможно выполнить покупку.");
+                    return;
+                }
+
+                var updatePlayer = Core.Context.Player.FirstOrDefault(p => p.PlayerID == player.PlayerID);
+                if (updatePlayer == null)
+                {
+                    Console.WriteLine($"Ошибка: игрок не найден в БД ;(");
+                    return; 
+                }
+                player = updatePlayer;
+
                 if (quantity <= 0)
                 {
                     Console.WriteLine("Кол-во покупаемых деталей должно быть положительным!");
@@ -150,7 +167,7 @@ namespace ConsoleApp1
                     return;
                 }
 
-                PartsInStock repairPart = Core.Context.PartsInStock.FirstOrDefault(p => part.PartID == part.PartID && p.PlayerID == player.PlayerID);
+                PartsInStock repairPart = Core.Context.PartsInStock.FirstOrDefault(p => p.PartID == part.PartID && p.PlayerID == player.PlayerID);
 
                 if (repairPart != null)
                 {
@@ -170,6 +187,16 @@ namespace ConsoleApp1
 
                 player.MyBalance -= totalCost;
 
+                try
+                {
+                    Core.Context.SaveChanges();
+                    Console.WriteLine($"Заказ на {part.PartName} {quantity} шт. оформлен. Стоимость: {totalCost}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка при сохранении изменений в базе данных: {ex.Message}");
+                }
+
                 Core.Context.SaveChanges();
                 Console.WriteLine($"Заказ на {part.PartName} {quantity} шт. оформлен. Стоимость: {totalCost}");
 
@@ -177,17 +204,18 @@ namespace ConsoleApp1
 
             public void GameStatus()
             {
-                Console.WriteLine($"Нынешний баланс: {player.MyBalance}");
+                Console.WriteLine($"\nНынешний баланс: {player.MyBalance}");
                 Console.WriteLine("Название детали | Кол-во | Цена (за 1 шт.)");
+
                 var details = Core.Context.PartsInStock
-                    .Where(p => p.PlayerID == player.PlayerID && p.Quantity > 0)
-                    .Join(
-                        Core.Context.Parts,
-                        repairPart => repairPart.PartID,
-                        part => part.PartID,
-                        (repairPart, part) => new { PartName = part.PartName, Quantity = repairPart.Quantity, Price = part.Price }
-                    )
-                    .ToList();
+                .Where(p => p.PlayerID == player.PlayerID && p.Quantity > 0)
+                .Join(
+                    Core.Context.Parts,
+                    repairPart => repairPart.PartID,
+                    part => part.PartID,
+                    (stockItem, part) => new { PartName = part.PartName, Quantity = stockItem.Quantity, Price = part.Price, PartID = part.PartID } 
+                )
+                .ToList();
 
                 if (details.Any())
                 {
@@ -206,6 +234,18 @@ namespace ConsoleApp1
 
         static void Main(string[] args)
         {
+            var playerReset = Core.Context.Player.FirstOrDefault(p => p.PlayerID == 1);
+            if (playerReset != null)
+            {
+                decimal balance = 10000;
+                if (playerReset.MyBalance != balance)
+                {
+                    playerReset.MyBalance = balance;
+                    Core.Context.SaveChanges(); 
+                    Console.WriteLine($"Баланс игрока сброшен до {balance}.");
+                }
+            }
+
             Console.WriteLine("Добро пожаловать в автосервис!");
 
             Game game = new Game();
@@ -219,10 +259,10 @@ namespace ConsoleApp1
                 Client client = game.GenerateClient();
                 if (client == null) continue;
                 Console.WriteLine($"\nПриехал(-a) {client.ClientName}");
-                Console.WriteLine($"Cломалось {client.BrokenPart.PartName}");
+                Console.WriteLine($"Cломалось: {client.BrokenPart.PartName}");
                 Console.WriteLine($"Стоимость ремонта: {client.RepairCost}");
 
-                Console.WriteLine("Выберите действие:");
+                Console.WriteLine("\nВыберите действие:");
                 Console.WriteLine("1. Починить");
                 Console.WriteLine("2. Отказать");
                 Console.WriteLine("3. Закупить детали");
@@ -240,11 +280,12 @@ namespace ConsoleApp1
                         {
                             Console.WriteLine("У Вас нет нужной детали на складе!");
                             game.RefuseClient();
-                            Console.WriteLine($"Штраф за отказ клиенту {game.penalty}");
+                            Console.WriteLine($"\nШтраф за отказ клиенту {game.penalty}");
                         }
                         break;
                     case "2":
                         game.RefuseClient();
+                        Console.WriteLine($"\nШтраф за отказ клиенту {game.penalty}");
                         break;
                     case "3":
                         var allParts = Core.Context.Parts.ToList();
@@ -253,7 +294,7 @@ namespace ConsoleApp1
                             Console.WriteLine($"{i + 1}. {allParts[i].PartName} - Цена: {allParts[i].Price}");
                         }
                         Console.Write("Выберите номер детали для покупки: ");
-                        if (int.TryParse(Console.ReadLine(), out int partIndex) && partIndex > 0 <= allParts.Count)
+                        if (int.TryParse(Console.ReadLine(), out int partIndex) && partIndex > 0 && partIndex <= allParts.Count)
                         {
                             Console.WriteLine("Введите кол-во: ");
                             if (int.TryParse(Console.ReadLine(), out int q))
