@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.cs" />
     <Compile Include="Items.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
