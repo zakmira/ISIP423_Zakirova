@@ -12,6 +12,9 @@
         <EntityTypeShape EntityType="pr8Model.sysdiagrams" Width="1.5" PointX="4.75" PointY="4.75" IsExpanded="true" />
         <AssociationConnector Association="pr8Model.FK_Orders_PVZ" ManuallyRouted="false" />
         <AssociationConnector Association="pr8Model.FK_Orders_RegisteredUsers" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="pr8Model.OrderItems" Width="1.5" PointX="5.25" PointY="1.625" />
+        <AssociationConnector Association="pr8Model.FK_OrderItems_Items" />
+        <AssociationConnector Association="pr8Model.FK_OrderItems_Orders" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

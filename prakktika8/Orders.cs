@@ -14,6 +14,12 @@ namespace prakktika8
     
     public partial class Orders
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Orders()
+        {
+            this.OrderItems = new HashSet<OrderItems>();
+        }
+    
         public int OrderID { get; set; }
         public int UserID { get; set; }
         public int PVZid { get; set; }
@@ -22,5 +28,7 @@ namespace prakktika8
     
         public virtual PVZ PVZ { get; set; }
         public virtual RegisteredUsers RegisteredUsers { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OrderItems> OrderItems { get; set; }
     }
 }

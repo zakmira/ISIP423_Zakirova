@@ -30,5 +30,6 @@ namespace prakktika8
         public virtual DbSet<PVZ> PVZ { get; set; }
         public virtual DbSet<RegisteredUsers> RegisteredUsers { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
+        public virtual DbSet<OrderItems> OrderItems { get; set; }
     }
 }

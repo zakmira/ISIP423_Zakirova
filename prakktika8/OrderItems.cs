@@ -12,19 +12,16 @@ namespace prakktika8
     using System;
     using System.Collections.Generic;
     
-    public partial class Items
+    public partial class OrderItems
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Items()
-        {
-            this.OrderItems = new HashSet<OrderItems>();
-        }
-    
+        public int OrderItemID { get; set; }
+        public int OrderID { get; set; }
         public int ItemID { get; set; }
-        public string ItemName { get; set; }
+        public int Quantity { get; set; }
         public decimal Price { get; set; }
+        public string ItemName { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrderItems> OrderItems { get; set; }
+        public virtual Items Items { get; set; }
+        public virtual Orders Orders { get; set; }
     }
 }
