@@ -17,7 +17,7 @@
           <Key>
             <PropertyRef Name="OrderItemID" />
           </Key>
-          <Property Name="OrderItemID" Type="int" Nullable="false" />
+          <Property Name="OrderItemID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="OrderID" Type="int" Nullable="false" />
           <Property Name="ItemID" Type="int" Nullable="false" />
           <Property Name="ItemName" Type="nvarchar" MaxLength="50" Nullable="false" />
@@ -28,7 +28,7 @@
           <Key>
             <PropertyRef Name="OrderID" />
           </Key>
-          <Property Name="OrderID" Type="int" Nullable="false" />
+          <Property Name="OrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserID" Type="int" Nullable="false" />
           <Property Name="PVZid" Type="int" Nullable="false" />
           <Property Name="OrderDate" Type="date" Nullable="false" />
@@ -45,7 +45,7 @@
           <Key>
             <PropertyRef Name="UserID" />
           </Key>
-          <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="UserID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Password" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>

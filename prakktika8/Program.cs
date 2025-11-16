@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.Entity;
 using System.Threading.Tasks;
+using static prakktika8.Program;
 
 namespace prakktika8
 {
@@ -45,11 +47,11 @@ namespace prakktika8
 
             public void HandleSignUp()
             {
-                Console.WriteLine("Введите email: ");
+                Console.Write("Введите email: ");
                 var email = Console.ReadLine();
-                Console.WriteLine("Введите пароль: ");
+                Console.Write("Введите пароль: ");
                 var password = Console.ReadLine();
-                Console.WriteLine("Повторите пароль: ");
+                Console.Write("Повторите пароль: ");
                 var passwordRepeat = Console.ReadLine();
                 if (password != passwordRepeat)
                 {
@@ -69,14 +71,14 @@ namespace prakktika8
 
             public void HandleSignIn()
             {
-                Console.WriteLine("Введите email: ");
+                Console.Write("Введите email: ");
                 var email = Console.ReadLine();
-                Console.WriteLine("Введите пароль: ");
+                Console.Write("Введите пароль: ");
                 var password = Console.ReadLine();
 
                 if (SignIn(email, password))
                 {
-                    Console.WriteLine("Добро пожаловать!");
+                    Console.WriteLine("\nДобро пожаловать!");
                 }
                 else
                 {
@@ -111,7 +113,7 @@ namespace prakktika8
 
             public void AddToCart()
             {
-                Console.WriteLine("Введите ID товара:");
+                Console.Write("Введите ID товара: ");
                 if (int.TryParse(Console.ReadLine(), out int itemId))
                 {
                     var item = allItems.FirstOrDefault(i => i.ItemID == itemId);
@@ -121,7 +123,7 @@ namespace prakktika8
                         return;
                     }
 
-                    Console.WriteLine("Введите количество:");
+                    Console.Write("Введите количество: ");
                     if (int.TryParse(Console.ReadLine(), out int quantity) && quantity > 0)
                     {
                         var existCartItem = cart.FirstOrDefault(c => c.ItemID == itemId);
@@ -163,12 +165,12 @@ namespace prakktika8
                 Console.WriteLine("Ваша корзина:");
                 foreach (var item in cart)
                 {
-                    Console.WriteLine($"{item.ItemName} {item.Quantity} шт. — {item.Price * item.Quantity} руб.");
+                    Console.WriteLine($"{item.ItemName} {item.Quantity} шт. — {item.Price * item.Quantity}");
                 }
             }
             public void DeleteItem()
             {
-                Console.WriteLine("Введите ID товара для удаления: ");
+                Console.Write("Введите ID товара для удаления: ");
                 if (int.TryParse(Console.ReadLine(), out int itemId))
                 {
                     var existCartItem = cart.FirstOrDefault(c => c.ItemID == itemId);
@@ -178,7 +180,7 @@ namespace prakktika8
                         return;
                     }
 
-                    Console.WriteLine("Введите кол-во для удаления: ");
+                    Console.Write("Введите кол-во для удаления: ");
                     if (int.TryParse(Console.ReadLine(), out int quantity) && quantity > 0)
                     {
                         if (quantity >= existCartItem.Quantity)
@@ -189,12 +191,12 @@ namespace prakktika8
                         else
                         {
                             existCartItem.Quantity -= quantity;
-                            Console.WriteLine("Количество товара уменьшено");
+                            Console.WriteLine("Кол-во товара уменьшено");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Неверное количество!");
+                        Console.WriteLine("Неверное кол-во!");
                     }
                 }
                 else
@@ -274,7 +276,8 @@ namespace prakktika8
                         OrderID = order.OrderID,      
                         ItemID = item.ItemID,         
                         Quantity = item.Quantity,     
-                        Price = item.Price 
+                        Price = item.Price,
+                        ItemName = item.ItemName
                     };
                     Core.Context.OrderItems.Add(orderItem);
                 }
@@ -287,7 +290,7 @@ namespace prakktika8
 
             private void OrderSingleItem(PVZ pvz)
             {
-                Console.WriteLine("Введите ID товара из корзины: ");
+                Console.Write("Введите ID товара из корзины: ");
                 if (!int.TryParse(Console.ReadLine(), out int itemId))
                 {
                     Console.WriteLine("Некорректный ID товара");
@@ -324,7 +327,8 @@ namespace prakktika8
                     OrderID = order.OrderID,
                     ItemID = cartItem.ItemID,
                     Quantity = quantity,
-                    Price = cartItem.Price
+                    Price = cartItem.Price,
+                    ItemName = cartItem.ItemName
                 };
                 Core.Context.OrderItems.Add(orderItem);
                 Core.Context.SaveChanges();
@@ -362,13 +366,13 @@ namespace prakktika8
 
                 foreach (var order in orders)
                 {
-                    Console.WriteLine($"Заказ {order.OrderID} от {order.OrderDate:DD.MM.YYYY} на сумму {order.TotalAmount} руб.");
+                    Console.WriteLine($"Заказ {order.OrderID} от {order.OrderDate:dd.MM.yyyy} на сумму {order.TotalAmount}");
 
                     var orderItems = Core.Context.OrderItems.Where(oi => oi.OrderID == order.OrderID).ToList();
                     foreach (var item in orderItems)
                     {
                         var product = Core.Context.Items.FirstOrDefault(i => i.ItemID == item.ItemID);
-                        Console.WriteLine($"{product.ItemName} {item.Quantity} шт. - {item.Price * item.Quantity} руб.");
+                        Console.WriteLine($"{product.ItemName} {item.Quantity} шт. - {item.Price * item.Quantity}");
                     }
                 }
             }
@@ -377,6 +381,79 @@ namespace prakktika8
         static void Main(string[] args)
         {
             var marketplace = new Marketplace();
+            Console.WriteLine("\nДобро пожаловать на маркетплейс WONGG!");
+
+            while (true)
+            {
+               
+                if (marketplace.User == null)
+                {
+                    Console.WriteLine("\nа) Регистрация");
+                    Console.WriteLine("б) Вход в аккаунт");
+                    Console.WriteLine("1. Просмотр товаров");
+                    Console.WriteLine("8. Выход с сайта");
+
+                }
+                else
+                {
+                    Console.WriteLine($"\nВы вошли как: {marketplace.User.Email}");
+                    Console.WriteLine("1. Просмотр товаров");
+                    Console.WriteLine("2. Добавить в корзину");
+                    Console.WriteLine("3. Просмотр корзины");
+                    Console.WriteLine("4. Удалить из корзины");
+                    Console.WriteLine("5. Оформить заказ");
+                    Console.WriteLine("6. Просмотр заказов");
+                    Console.WriteLine("7. Выход из аккаунта");
+                    Console.WriteLine("8. Выход с сайта");
+                }
+
+                Console.Write("Выберите действие: ");
+                var choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "а":
+                        if (marketplace.User == null)
+                            marketplace.HandleSignUp();
+                        else
+                            Console.WriteLine("Вы уже вошли в аккаунт");
+                        break;
+                    case "б":
+                        if (marketplace.User == null)
+                            marketplace.HandleSignIn();
+                        else
+                            Console.WriteLine("Вы уже вошли в аккаунт");
+                        break;
+                    case "1":
+                        marketplace.LookItems();
+                        break;
+                    case "2":
+                        marketplace.AddToCart();
+                        break;
+                    case "3":
+                        marketplace.LookCart();
+                        break;
+                    case "4":
+                        marketplace.DeleteItem();
+                        break;
+                    case "5":
+                        marketplace.Order();
+                        break;
+                    case "6":
+                        marketplace.LookOrders();
+                        break;
+                    case "7":
+                        marketplace.User = null;
+                        Console.WriteLine("Вы вышли из аккаунта");
+                        break;
+                    case "8":
+                        Console.WriteLine("Будем рады видеть Вас снова!");
+                        return;
+                    default:
+                        Console.WriteLine("Некорректный выбор.");
+                        break;
+                }
+            }
         }
     }
 }
