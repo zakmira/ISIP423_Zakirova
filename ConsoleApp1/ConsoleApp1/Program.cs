@@ -46,11 +46,23 @@ namespace ConsoleApp1
             public Player player;
             private List<Parts> allParts;
             private List<PartsInStock> partsInStock;
+            private List<PendingOrder> pendingOrders;
+            private int pendingCars;
+
+            private class PendingOrder
+            {
+                public int PartID { get; set; }
+                public int Quantity { get; set; }
+                public int CarsToWait { get; set; }
+                public int PlayerID { get; set; }
+            }
 
             public Game()
             {
                 partsInStock = new List<PartsInStock>();
                 allParts = new List<Parts>();
+                pendingOrders = new List<PendingOrder>();
+                pendingCars = 0;
                 LoadPartsDB();
             }
 
@@ -112,29 +124,74 @@ namespace ConsoleApp1
 
             public void Repair(Client client)
             {
-                PartsInStock repairPart = partsInStock.FirstOrDefault(p => p.PartID == client.BrokenPart.PartID && p.PlayerID == player.PlayerID);
-
-                if (repairPart != null && repairPart.Quantity > 0)
+                if (HasPart(client.BrokenPart))
                 {
-                    repairPart.Quantity -= 1;
-                    player.MyBalance += client.RepairCost;
+                    PartsInStock repairPart = partsInStock.FirstOrDefault(p => p.PartID == client.BrokenPart.PartID && p.PlayerID == player.PlayerID);
 
-                    Core.Context.SaveChanges();
-                    partsInStock = Core.Context.PartsInStock.Where(p => p.PlayerID == player.PlayerID).ToList();
+                    if (repairPart != null && repairPart.Quantity > 0)
+                    {
+                        repairPart.Quantity -= 1;
+                        player.MyBalance += client.RepairCost;
 
-                    Console.WriteLine($"Ремонт выполнен! Использовано: {client.BrokenPart.PartName}");
+                        Core.Context.SaveChanges();
+                        partsInStock = Core.Context.PartsInStock.Where(p => p.PlayerID == player.PlayerID).ToList();
+
+                        Console.WriteLine($"Ремонт выполнен! Использовано: {client.BrokenPart.PartName}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Ремонт невозможен, т.к. отсутствует деталь");
+                        RefuseClient();
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Ремонт невозможен, т.к. отсутствует деталь");
-                    RefuseClient();
+                    RepairRandomPart();
                 }
+
             }
 
             public void RefuseClient()
             {
                 player.MyBalance -= penalty;
                 Core.Context.SaveChanges();
+            }
+
+            public void RepairRandomPart()
+            {
+                var availableParts = partsInStock.Where(p => p.Quantity > 0).ToList();
+
+                if (availableParts.Any())
+                {
+                    Random random = new Random();
+                    PartsInStock randomStockItem = availableParts[random.Next(availableParts.Count)];
+
+                    Parts randomPart = Core.Context.Parts.FirstOrDefault(p => p.PartID == randomStockItem.PartID);
+
+                    if (randomPart != null)
+                    {
+                        randomStockItem.Quantity -= 1;
+
+                        int increasedPenalty = penalty * 2;
+                        player.MyBalance -= increasedPenalty;
+
+                        partsInStock = Core.Context.PartsInStock.Where(p => p.PlayerID == player.PlayerID).ToList();
+
+                        Core.Context.SaveChanges();
+
+                        Console.WriteLine($"Промах! Использовано: {randomPart.PartName}. Штраф: {increasedPenalty}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Ошибка: Не удалось найти информацию о случайной детали");
+                        RefuseClient();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("На складе нет никаких деталей для замены. Применяется штраф за отказ");
+                    RefuseClient();
+                }
             }
 
             public void OrderParts(Parts part, int quantity)
@@ -166,24 +223,14 @@ namespace ConsoleApp1
                     Console.WriteLine("Недостаточно средств для покупки");
                     return;
                 }
-
-                PartsInStock repairPart = Core.Context.PartsInStock.FirstOrDefault(p => p.PartID == part.PartID && p.PlayerID == player.PlayerID);
-
-                if (repairPart != null)
+               
+                pendingOrders.Add(new PendingOrder
                 {
-                    repairPart.Quantity += quantity;
-                }
-                else
-                {
-                    repairPart = new PartsInStock
-                    {
-                        PartID = part.PartID,
-                        PlayerID = player.PlayerID,
-                        Quantity = quantity
-                    };
-
-                    Core.Context.PartsInStock.Add(repairPart);
-                }
+                    PartID = part.PartID,
+                    Quantity = quantity,
+                    CarsToWait = 2,
+                    PlayerID = player.PlayerID
+                });
 
                 player.MyBalance -= totalCost;
 
@@ -197,9 +244,52 @@ namespace ConsoleApp1
                     Console.WriteLine($"Ошибка при сохранении изменений в базе данных: {ex.Message}");
                 }
 
-                Core.Context.SaveChanges();
-                Console.WriteLine($"Заказ на {part.PartName} {quantity} шт. оформлен. Стоимость: {totalCost}");
+            }
 
+            public void ProcessMachines()
+            {
+                pendingCars++;
+
+                Console.WriteLine($"Прошло машин: {pendingCars}");
+
+                for (int i = pendingOrders.Count - 1; i >= 0; i--)
+                {
+                    var order = pendingOrders[i];
+                    order.CarsToWait--;
+
+                    if (order.CarsToWait <= 0)
+                    {
+                        Console.WriteLine($"Доставлен заказ: {order.Quantity} шт. детали с ID {order.PartID}");
+
+                        var stockItem = Core.Context.PartsInStock.FirstOrDefault(p => p.PartID == order.PartID && p.PlayerID == order.PlayerID);
+
+                        if (stockItem != null)
+                        {
+                            stockItem.Quantity += order.Quantity;
+                        }
+                        else
+                        {
+                            stockItem = new PartsInStock
+                            {
+                                PartID = order.PartID,
+                                PlayerID = order.PlayerID,
+                                Quantity = order.Quantity
+                            };
+                            Core.Context.PartsInStock.Add(stockItem);
+                        }
+
+                        pendingOrders.RemoveAt(i);
+                    }
+                }
+
+                bool orderDelivered = false;
+                for (int i = pendingOrders.Count - 1; i >= 0; i--)
+                {
+                    if (pendingOrders[i].CarsToWait <= 0) { orderDelivered = true; break; }
+                }
+                if (orderDelivered) pendingCars = 0; 
+
+                Core.Context.SaveChanges();
             }
 
             public void GameStatus()
@@ -254,6 +344,7 @@ namespace ConsoleApp1
             bool gameRun = true;
             while (gameRun)
             {
+                game.ProcessMachines();
                 game.GameStatus();
 
                 Client client = game.GenerateClient();
@@ -279,8 +370,21 @@ namespace ConsoleApp1
                         else
                         {
                             Console.WriteLine("У Вас нет нужной детали на складе!");
-                            game.RefuseClient();
-                            Console.WriteLine($"\nШтраф за отказ клиенту {game.penalty}");
+                            Console.WriteLine("1 - отказать клиенту, 2 - испытать удачу и заменить рандомной деталью))");
+                            string subChoice = Console.ReadLine();
+                            switch (subChoice)
+                            {
+                                case "1":
+                                    game.RefuseClient();
+                                    break;
+                                case "2":
+                                    game.RepairRandomPart();
+                                    break;
+                                default:
+                                    Console.WriteLine("Неверный выбор");
+                                    break;
+
+                            }
                         }
                         break;
                     case "2":
